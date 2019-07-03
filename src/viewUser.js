@@ -8,7 +8,7 @@ class ViewUser extends React.Component {
 
   subData = dataList => {
     return Object.keys(dataList).map(key => (
-      <li>
+      <li key={key}>
         <div>{key}:</div>
         {typeof dataList[key] === "object" ? (
           <ul>{this.subData(dataList[key])}</ul>
@@ -26,10 +26,7 @@ class ViewUser extends React.Component {
   }
 
   render() {
-    {
-      console.log(`view User: ${this.props.userId}`);
-    }
-    const user = this.state.user;
+     const {user} = this.state;
     return (
       <ul className="todo-list">
         {user ? this.subData(user) : <h2> Loading... </h2>}

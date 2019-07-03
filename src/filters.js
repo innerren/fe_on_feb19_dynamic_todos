@@ -1,22 +1,24 @@
 import React from "react";
 
 class Filters extends React.Component {
-  render() {
-    return this.props.filters.map(filter => (
-      <li>
-        <label className="radio">
-          <input
-            type="radio"
-            name="filters"
-            checked={filter === this.props.filter}
-            onChange={() => {
+
+  list = () => {return this.props.filters.map(filter => (
+      <li key={filter}>
+        <div onClick={() => {
               this.props.setFilter(filter);
-            }}
-          />
+            }}>
           <span className="radio-text">{filter}</span>
-        </label>
+        </div>
       </li>
     ));
+  }
+
+  render() {
+    return (
+      <ul className="filters">
+      {this.list()}
+      </ul>
+    )
   }
 }
 

@@ -18,7 +18,6 @@ export const getTodo = async todoId => {
 
 export const getUserTodos = async userId => {
   const todos = await getTodos();
-  console.log(`UserId: ${userId}`);
   return todos.filter(todo => todo.userId === userId);
 };
 

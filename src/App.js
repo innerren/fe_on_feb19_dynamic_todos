@@ -2,11 +2,10 @@ import React from "react";
 //import logo from './logo.svg';
 import "./App.css";
 //import {getUsers, getUser, getTodos, getTodo, getUserTodos } from './api.js';
-import UserList from "./userlist";
-import TodoList from "./todolist";
-import ViewUser from "./viewUser";
-import UserTodo from "./userTodo";
-import ViewTodo from "./viewTodo";
+import UserList from "./UserList";
+import TodoList from "./TodoList";
+import ViewUser from "./ViewUser";
+import ViewTodo from "./ViewTodo";
 
 class App extends React.Component {
   state = {
@@ -16,26 +15,11 @@ class App extends React.Component {
     todoId: 0
   };
 
-  setUserId = id => this.setState({ userId: id });
-  setUserName = name => this.setState({ userName: name });
-  setTodoId = id => this.setState({ todoId: id });
+  setUserViewer = (userId, view) => this.setState({userId, view});
 
-  loadUser = id => {
-    this.setUserId(id);
-    this.setState({ view: "User" });
-  };
+  setTodoViewer=  (todoId, view) => this.setState({todoId, view});
 
-  loadTodo = id => {
-    this.setTodoId(id);
-    this.setState({ view: "Todo" });
-  };
-
-  loadUserTodo = id => {
-    this.setUserId(id);
-    this.setState({ view: "UserTodo" });
-  };
-
-  render() {
+   render() {
     return (
       <section className="todoapp">
         <header className="header">
@@ -57,39 +41,52 @@ class App extends React.Component {
           </button>
         </header>
         <section className="main">
-          {this.state.view === "UserList" ? (
-            <UserList
-              loadUser={this.loadUser}
-              loadUserTodo={this.loadUserTodo}
-            />
-          ) : this.state.view === "TodoList" ? (
-            <TodoList
-              loadTodo={this.loadTodo}
-              loadUser={this.loadUser}
-              loadUserTodo={this.loadUserTodo}
-            />
-          ) : this.state.view === "UserTodo" ? (
-            <UserTodo userId={this.state.userId} loadTodo={this.loadTodo} />
-          ) : this.state.view === "User" ? (
-            <ul className="todo-list">
-              <ViewUser
-                setFilter={this.setFilter}
-                filter={this.state.filter}
-                userId={this.state.userId}
-                loadUserTodo={this.loadUserTodo}
-              />
-            </ul>
-          ) : this.state.view === "Todo" ? (
-            <ul className="todo-list">
-              <ViewTodo loadUser={this.loadUser} todoId={this.state.todoId} />
-            </ul>
-          ) : (
-            <div />
-          )}
+
+          <Viewer 
+          key={this.state.view}
+          view={this.state.view}
+          setUserViewer={this.setUserViewer}
+          setTodoViewer={this.setTodoViewer}
+          userId={this.state.userId}
+          todoId={this.state.todoId}
+          />
+  
         </section>
       </section>
     );
   }
 }
+
+ const Viewer = (props) => {
+         switch(props.view){
+          case "UserList": return (<UserList
+              setUserViewer={props.setUserViewer}
+              filters = {["id", "username"]}
+            />)
+          case "TodoList": return (<TodoList
+              setTodoViewer={props.setTodoViewer}
+              setUserViewer={props.setUserViewer}
+              userId={""}
+              filters={["completed", "username", "title"]}
+            />)
+          case "UserTodo": return  (
+            <TodoList 
+              userId={props.userId} 
+              setTodoViewer={props.setTodoViewer}
+              setTodoViewer={props.setTodoViewer} 
+              filters={["completed", "title"]}
+            />)
+          case "User": return (<ul className="todo-list">
+              <ViewUser
+                userId={props.userId}
+              />
+            </ul>)
+          case "Todo": return (<ul className="todo-list">
+              <ViewTodo 
+              todoId={props.todoId} />
+            </ul>)
+          default: return (<div />)
+        }
+      }
 
 export default App;

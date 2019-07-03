@@ -1,12 +1,12 @@
 import React from "react";
 import { getUsers } from "./api.js";
-import Filters from "./filters";
+import Filters from "./Filters";
 
 class UserList extends React.Component {
   state = {
     users: null,
     filter: "",
-    filters: ["id", "username"]
+    reversed: false,
   };
 
   async componentDidMount() {
@@ -18,40 +18,39 @@ class UserList extends React.Component {
   setFilter = newFilter => {
     this.state.filter === newFilter
       ? this.setState(prevstate => {
-          users: prevstate.users.reverse();
-        })
+          return {users: prevstate.users.reverse(),
+                  reversed: !prevstate.reversed
+                }})
       : this.setState(prevstate => {
-          users: prevstate.users.sort((a, b) => {
-            a = String(a[newFilter]);
-            b = String(b[newFilter]);
-            if (a < b) {
-              return -1;
-            }
-            if (a > b) {
-              return 1;
-            }
-          });
+          return {filter: newFilter,
+                    users: prevstate.users.sort((a, b) => {
+                      a = String(a[newFilter]);
+                      b = String(b[newFilter]);
+                      if (a < b) {
+                        return -1;
+                      }
+                      if (a > b) {
+                        return 1;
+                      }
+                    })}
         });
-    this.setState({ filter: newFilter });
   };
 
   list = users =>
     users.map(user => (
-      <li className="" id={user.id}>
-        <a
-          href="#"
+      <li className="" key={user.id}>
+        <div className="link"
           onClick={() => {
-            this.props.loadUser(user.id);
+            this.props.setUserViewer(user.id, "User");
           }}
-          className="user"
         >
           {user.username}
-        </a>
+        </div>
         <div>
           <button
             className="loadTodo"
             onClick={() => {
-              this.props.loadUserTodo(user.id);
+              this.props.setUserViewer(user.id, "UserTodo");
             }}
           >
             Load User Todo
@@ -61,17 +60,15 @@ class UserList extends React.Component {
     ));
 
   render() {
-    const users = this.state.users;
+    const {users, reversed} = this.state;
     return (
       <div>
-        <ul className="filters">
           <Filters
             setFilter={this.setFilter}
-            filters={this.state.filters}
+            filters={this.props.filters}
             filter={this.state.filter}
           />
-        </ul>
-        <ul className="todo-list">
+        <ul className="todo-list" key={reversed}>
           {users ? this.list(users) : <h2> Loading... </h2>}
         </ul>
       </div>

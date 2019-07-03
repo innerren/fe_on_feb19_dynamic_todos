@@ -14,7 +14,7 @@ class ViewTodo extends React.Component {
 
   list = todo =>
     Object.keys(todo).map(key => (
-      <li>
+      <li key={key}>
         <div>{key}:</div>
         <div>{todo[key]}</div>
       </li>
